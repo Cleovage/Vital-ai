@@ -114,7 +114,7 @@ fun AppNavigation(viewModel: MainViewModel = viewModel()) {
             }
             composable("stats") {
                 val data by viewModel.healthData.collectAsState()
-                StatsScreen(data, { metric -> navController.navigate("detail/$metric") })
+                StatsScreen(data, viewModel) { metric -> navController.navigate("detail/$metric") }
             }
             composable("coach") {
                 val messages by viewModel.chatMessages.collectAsState()
@@ -130,6 +130,7 @@ fun AppNavigation(viewModel: MainViewModel = viewModel()) {
                 com.example.ui.screens.MetricDetailScreen(
                     metricName = metric,
                     healthData = data,
+                    viewModel = viewModel,
                     onBack = { navController.popBackStack() }
                 )
             }

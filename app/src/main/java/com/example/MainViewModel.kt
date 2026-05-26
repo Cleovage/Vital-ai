@@ -78,6 +78,30 @@ class MainViewModel(application: Application) : androidx.lifecycle.AndroidViewMo
         }
     }
 
+    suspend fun getWeeklyTrend(metricName: String): List<Float> {
+        return if (_isHealthConnectAvailable.value && healthConnectManager.hasAllPermissions()) {
+            healthConnectManager.readWeeklyTrend(metricName)
+        } else {
+            List(7) { 0f }
+        }
+    }
+
+    fun addManualData(metricName: String, value: Float) {
+        viewModelScope.launch {
+            if (_isHealthConnectAvailable.value && healthConnectManager.hasAllPermissions()) {
+                when (metricName.lowercase()) {
+                    "steps" -> healthConnectManager.writeSteps(value.toLong())
+                    "energy" -> healthConnectManager.writeActiveCalories(value.toDouble())
+                    "distance" -> healthConnectManager.writeDistance(value.toDouble())
+                    "hydration" -> healthConnectManager.writeHydration(value.toDouble())
+                }
+                // Refresh data
+                val snapshot = healthConnectManager.readTodaySnapshot()
+                healthData.value = FullHealthData(today = snapshot)
+            }
+        }
+    }
+
     fun sendMessage(text: String) {
         viewModelScope.launch {
             val userMsg = ChatMessage(role = "user", content = text)

@@ -24,6 +24,10 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.StrokeCap
 
+import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.ui.zIndex
+
 @Composable
 fun MetricCard(
     title: String,
@@ -33,6 +37,7 @@ fun MetricCard(
     badgeText: String = "No data",
     progressColor: Color = AccentTeal,
     modifier: Modifier = Modifier,
+    onQuickAdd: (() -> Unit)? = null,
     onClick: () -> Unit = {}
 ) {
     Box(
@@ -45,11 +50,23 @@ fun MetricCard(
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().zIndex(1f),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Top
             ) {
                 Text(text = title, color = TextPrimary, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                if (onQuickAdd != null) {
+                    Box(
+                        modifier = Modifier
+                            .size(28.dp)
+                            .background(progressColor.copy(alpha = 0.2f), CircleShape)
+                            .clip(CircleShape)
+                            .clickable { onQuickAdd() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(imageVector = Icons.Default.Add, contentDescription = "Add", tint = progressColor, modifier = Modifier.size(16.dp))
+                    }
+                }
             }
             Spacer(modifier = Modifier.height(8.dp))
             Row(verticalAlignment = Alignment.Bottom) {

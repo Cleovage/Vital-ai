@@ -22,7 +22,9 @@ data class UserProfile(
     val weightKg: Float = 0f,
     val stepGoal: Int = 10000,
     val activeEnergyGoal: Int = 500,
-    val sleepGoalHours: Float = 8f
+    val sleepGoalHours: Float = 8f,
+    val distanceGoalKm: Float = 5f,
+    val hydrationGoalLiters: Float = 2.5f
 )
 
 @Dao
@@ -46,7 +48,7 @@ interface UserProfileDao {
     suspend fun upsertProfile(profile: UserProfile)
 }
 
-@Database(entities = [ChatMessage::class, UserProfile::class], version = 2, exportSchema = false)
+@Database(entities = [ChatMessage::class, UserProfile::class], version = 3, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun chatDao(): ChatDao
     abstract fun userProfileDao(): UserProfileDao
