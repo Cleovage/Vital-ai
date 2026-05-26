@@ -14,7 +14,7 @@ import com.example.ui.theme.AccentTeal
 import com.example.ui.theme.TextPrimary
 
 @Composable
-fun StatsScreen(healthData: FullHealthData) {
+fun StatsScreen(healthData: FullHealthData, onNavigateToDetail: (String) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -46,7 +46,8 @@ fun StatsScreen(healthData: FullHealthData) {
                     progress = (healthData.today.steps / 10000.0).toFloat().coerceIn(0f, 1f),
                     badgeText = "Daily Total",
                     progressColor = AccentTeal,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    onClick = { onNavigateToDetail("steps") }
                 )
 
                 MetricCard(
@@ -56,7 +57,8 @@ fun StatsScreen(healthData: FullHealthData) {
                     progress = (healthData.today.activeCalories / 2000.0).toFloat().coerceIn(0f, 1f),
                     badgeText = "Daily Total",
                     progressColor = AccentTeal,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    onClick = { onNavigateToDetail("energy") }
                 )
             }
             
@@ -70,7 +72,8 @@ fun StatsScreen(healthData: FullHealthData) {
                     progress = (healthData.today.distanceKm / 5.0).toFloat().coerceIn(0f, 1f),
                     badgeText = "Daily Total",
                     progressColor = AccentTeal,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    onClick = { onNavigateToDetail("distance") }
                 )
 
                 MetricCard(
@@ -80,7 +83,8 @@ fun StatsScreen(healthData: FullHealthData) {
                     progress = (healthData.today.hydrationLiters / 2.5).toFloat().coerceIn(0f, 1f),
                     badgeText = "Daily Total",
                     progressColor = AccentTeal,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    onClick = { onNavigateToDetail("hydration") }
                 )
             }
 
@@ -95,7 +99,8 @@ fun StatsScreen(healthData: FullHealthData) {
                     progress = if (healthData.today.avgHR > 0) 0.6f else 0f,
                     badgeText = "Resting: ${healthData.today.restingHR.toInt()}",
                     progressColor = AccentTeal,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    onClick = { onNavigateToDetail("heart_rate") }
                 )
 
                 MetricCard(
@@ -105,7 +110,8 @@ fun StatsScreen(healthData: FullHealthData) {
                     progress = if (healthData.today.hrv > 0) 0.5f else 0f,
                     badgeText = "Daily Avg",
                     progressColor = AccentTeal,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    onClick = { onNavigateToDetail("hrv") }
                 )
             }
 
@@ -119,16 +125,18 @@ fun StatsScreen(healthData: FullHealthData) {
                     progress = if (healthData.today.spo2 > 0) (healthData.today.spo2 / 100.0).toFloat() else 0f,
                     badgeText = "Daily Avg",
                     progressColor = AccentTeal,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    onClick = { onNavigateToDetail("spo2") }
                 )
 
                 MetricCard(
                     title = "Stress Level",
-                    value = healthData.today.stressLevel.ifEmpty { "No data" }.capitalize(),
+                    value = healthData.today.stressLevel.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }.ifEmpty { "No data" },
                     unit = "",
                     progress = 0f,
                     badgeText = "Status",
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    onClick = { onNavigateToDetail("stress") }
                 )
             }
 

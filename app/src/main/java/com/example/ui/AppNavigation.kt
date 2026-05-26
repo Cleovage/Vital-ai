@@ -110,11 +110,11 @@ fun AppNavigation(viewModel: MainViewModel = viewModel()) {
         ) {
             composable("home") {
                 val data by viewModel.healthData.collectAsState()
-                HomeScreen(data) { navController.navigate("coach") }
+                HomeScreen(data, viewModel, { navController.navigate("coach") }, { metric -> navController.navigate("detail/$metric") })
             }
             composable("stats") {
                 val data by viewModel.healthData.collectAsState()
-                StatsScreen(data)
+                StatsScreen(data, { metric -> navController.navigate("detail/$metric") })
             }
             composable("coach") {
                 val messages by viewModel.chatMessages.collectAsState()
@@ -122,7 +122,16 @@ fun AppNavigation(viewModel: MainViewModel = viewModel()) {
                 CoachScreen(messages, isTyping) { text -> viewModel.sendMessage(text) }
             }
             composable("profile") {
-                ProfileScreen()
+                ProfileScreen(viewModel)
+            }
+            composable("detail/{metric}") { backStackEntry ->
+                val metric = backStackEntry.arguments?.getString("metric") ?: ""
+                val data by viewModel.healthData.collectAsState()
+                com.example.ui.screens.MetricDetailScreen(
+                    metricName = metric,
+                    healthData = data,
+                    onBack = { navController.popBackStack() }
+                )
             }
         }
     }

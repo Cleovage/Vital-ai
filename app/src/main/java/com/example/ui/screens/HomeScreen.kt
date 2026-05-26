@@ -29,7 +29,8 @@ import com.example.ui.theme.*
 fun HomeScreen(
     healthData: FullHealthData,
     viewModel: MainViewModel = viewModel(),
-    onNavigateToCoach: () -> Unit
+    onNavigateToCoach: () -> Unit,
+    onNavigateToDetail: (String) -> Unit
 ) {
     val context = LocalContext.current
     val requestPermissionActivityContract = PermissionController.createRequestPermissionResultContract()
@@ -87,7 +88,8 @@ fun HomeScreen(
                     progress = (healthData.today.activeCalories / 2000.0).toFloat().coerceIn(0f, 1f),
                     badgeText = "${(2000 - healthData.today.activeCalories).toInt().coerceAtLeast(0)} cal left",
                     progressColor = AccentTeal,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    onClick = { onNavigateToDetail("energy") }
                 )
 
                 MetricCard(
@@ -97,7 +99,8 @@ fun HomeScreen(
                     progress = (healthData.today.steps / 10000.0).toFloat().coerceIn(0f, 1f),
                     badgeText = "${healthData.today.steps} daily total",
                     progressColor = AccentTeal,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    onClick = { onNavigateToDetail("steps") }
                 )
             }
             
@@ -111,7 +114,8 @@ fun HomeScreen(
                     progress = (healthData.today.distanceKm / 5.0).toFloat().coerceIn(0f, 1f),
                     badgeText = "${String.format("%.1f", (5.0 - healthData.today.distanceKm).coerceAtLeast(0.0))} km left",
                     progressColor = AccentTeal,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    onClick = { onNavigateToDetail("distance") }
                 )
 
                 MetricCard(
@@ -121,7 +125,8 @@ fun HomeScreen(
                     progress = (healthData.today.hydrationLiters / 2.5).toFloat().coerceIn(0f, 1f),
                     badgeText = "${String.format("%.1f", (2.5 - healthData.today.hydrationLiters).coerceAtLeast(0.0))} L to go",
                     progressColor = AccentTeal,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    onClick = { onNavigateToDetail("hydration") }
                 )
             }
 

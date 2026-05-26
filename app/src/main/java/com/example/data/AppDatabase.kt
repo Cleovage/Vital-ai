@@ -11,6 +11,20 @@ data class ChatMessage(
     val timestamp: Long = System.currentTimeMillis()
 )
 
+@Entity(tableName = "user_profile")
+data class UserProfile(
+    @PrimaryKey val id: Int = 1,
+    val isLoggedIn: Boolean = false,
+    val name: String = "",
+    val email: String = "",
+    val gender: String = "",
+    val heightCm: Float = 0f,
+    val weightKg: Float = 0f,
+    val stepGoal: Int = 10000,
+    val activeEnergyGoal: Int = 500,
+    val sleepGoalHours: Float = 8f
+)
+
 @Dao
 interface ChatDao {
     @Query("SELECT * FROM chat_messages ORDER BY timestamp ASC")
@@ -23,7 +37,17 @@ interface ChatDao {
     suspend fun clearHistory()
 }
 
-@Database(entities = [ChatMessage::class], version = 1, exportSchema = false)
+@Dao
+interface UserProfileDao {
+    @Query("SELECT * FROM user_profile WHERE id = 1")
+    fun getProfile(): Flow<UserProfile?>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertProfile(profile: UserProfile)
+}
+
+@Database(entities = [ChatMessage::class, UserProfile::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun chatDao(): ChatDao
+    abstract fun userProfileDao(): UserProfileDao
 }

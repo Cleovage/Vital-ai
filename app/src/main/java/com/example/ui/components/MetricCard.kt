@@ -1,6 +1,7 @@
 package com.example.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,12 +32,14 @@ fun MetricCard(
     progress: Float = 0f, // 0 to 1
     badgeText: String = "No data",
     progressColor: Color = AccentTeal,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
 ) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(16.dp))
             .background(BackgroundSecondary)
+            .clickable { onClick() }
             .padding(16.dp)
             .aspectRatio(0.85f)
     ) {

@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -28,10 +29,18 @@ class MainViewModel(application: Application) : androidx.lifecycle.AndroidViewMo
     private val db = Room.databaseBuilder(
         application,
         AppDatabase::class.java, "vitaai-db"
-    ).build()
+    ).fallbackToDestructiveMigration().build()
 
     val chatMessages: StateFlow<List<ChatMessage>> = db.chatDao().getAllMessages()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    val userProfile: StateFlow<com.example.data.UserProfile> = db.userProfileDao().getProfile()
+        .map { it ?: com.example.data.UserProfile() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), com.example.data.UserProfile())
+
+    fun updateProfile(profile: com.example.data.UserProfile) {
+        viewModelScope.launch { db.userProfileDao().upsertProfile(profile) }
+    }
 
     private val _isTyping = MutableStateFlow(false)
     val isTyping: StateFlow<Boolean> = _isTyping
@@ -48,15 +57,7 @@ class MainViewModel(application: Application) : androidx.lifecycle.AndroidViewMo
 
     val healthData = MutableStateFlow(
         FullHealthData(
-            today = com.example.data.HealthSnapshot(
-                steps = 6200,
-                activeCalories = 350.0,
-                totalCalories = 1800.0,
-                avgHR = 72.0,
-                hrv = 45.0,
-                stressLevel = "moderate",
-                hydrationLiters = 1.2
-            )
+            today = com.example.data.HealthSnapshot()
         )
     )
 
@@ -67,9 +68,11 @@ class MainViewModel(application: Application) : androidx.lifecycle.AndroidViewMo
                     if (healthConnectManager.hasAllPermissions()) {
                         val snapshot = healthConnectManager.readTodaySnapshot()
                         healthData.value = FullHealthData(today = snapshot)
+                    } else {
+                        healthData.value = FullHealthData() // Zeroes
                     }
                 } catch (e: Exception) {
-                    // fall back to mock currently shown if error
+                    healthData.value = FullHealthData() // Fall back to zeros
                 }
             }
         }
