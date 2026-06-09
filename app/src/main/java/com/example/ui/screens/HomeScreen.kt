@@ -63,7 +63,7 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(BackgroundPrimary)
-                .padding(top = 40.dp)
+                .statusBarsPadding()
                 .verticalScroll(rememberScrollState())
         ) {
             Row(
@@ -192,7 +192,7 @@ fun HomeScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(100.dp))
+                Spacer(modifier = Modifier.height(24.dp))
             }
         }
 
@@ -200,7 +200,7 @@ fun HomeScreen(
             onClick = { addDialogMetric = "steps" },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(bottom = 100.dp, end = 24.dp), // offset for bottom nav
+                .padding(bottom = 24.dp, end = 24.dp),
             containerColor = AccentTeal,
             shape = CircleShape
         ) {
@@ -226,7 +226,16 @@ fun AddDataDialog(initialMetric: String, onDismiss: () -> Unit, onSave: (String,
     var selectedMetric by remember { mutableStateOf(initialMetric) }
     var inputValue by remember { mutableStateOf("") }
     
-    val metrics = listOf("steps" to "Steps", "energy" to "Calories (kcal)", "distance" to "Distance (km)", "hydration" to "Water (L)")
+    val metrics = listOf(
+        "steps" to "Steps", 
+        "energy" to "Calories", 
+        "distance" to "Distance", 
+        "hydration" to "Water",
+        "heart_rate" to "Heart Rate",
+        "hrv" to "HRV",
+        "spo2" to "SpO2",
+        "stress" to "Stress"
+    )
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -241,12 +250,12 @@ fun AddDataDialog(initialMetric: String, onDismiss: () -> Unit, onSave: (String,
                 Text("Select Metric Type:")
                 Spacer(modifier = Modifier.height(8.dp))
                 
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    metrics.take(2).forEach { (key, label) ->
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    metrics.subList(0, 3).forEach { (key, label) ->
                         FilterChip(
                             selected = selectedMetric == key,
                             onClick = { selectedMetric = key },
-                            label = { Text(label, fontSize = 12.sp) },
+                            label = { Text(label, fontSize = 11.sp) },
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = AccentTeal,
                                 selectedLabelColor = Color.White
@@ -254,12 +263,27 @@ fun AddDataDialog(initialMetric: String, onDismiss: () -> Unit, onSave: (String,
                         )
                     }
                 }
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    metrics.drop(2).forEach { (key, label) ->
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    metrics.subList(3, 6).forEach { (key, label) ->
                         FilterChip(
                             selected = selectedMetric == key,
                             onClick = { selectedMetric = key },
-                            label = { Text(label, fontSize = 12.sp) },
+                            label = { Text(label, fontSize = 11.sp) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = AccentTeal,
+                                selectedLabelColor = Color.White
+                            )
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    metrics.subList(6, 8).forEach { (key, label) ->
+                        FilterChip(
+                            selected = selectedMetric == key,
+                            onClick = { selectedMetric = key },
+                            label = { Text(label, fontSize = 11.sp) },
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = AccentTeal,
                                 selectedLabelColor = Color.White

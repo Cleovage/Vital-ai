@@ -13,7 +13,7 @@ import com.example.ui.components.MetricCard
 import com.example.ui.theme.AccentTeal
 import com.example.ui.theme.AccentGreen
 import com.example.ui.theme.AccentBlue
-import com.example.ui.theme.Amber
+import com.example.ui.theme.Red
 import com.example.ui.theme.TextPrimary
 
 import androidx.compose.runtime.collectAsState
@@ -32,7 +32,7 @@ fun StatsScreen(healthData: FullHealthData, viewModel: MainViewModel, onNavigate
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 40.dp)
+                .statusBarsPadding()
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
@@ -116,8 +116,9 @@ fun StatsScreen(healthData: FullHealthData, viewModel: MainViewModel, onNavigate
                         unit = if (healthData.today.avgHR > 0) "bpm" else "",
                         progress = if (healthData.today.avgHR > 0) 0.6f else 0f,
                         badgeText = "Resting: ${healthData.today.restingHR.toInt()}",
-                        progressColor = Amber,
+                        progressColor = Red,
                         modifier = Modifier.weight(1f),
+                        onQuickAdd = { addDialogMetric = "heart_rate" },
                         onClick = { onNavigateToDetail("heart_rate") }
                     )
 
@@ -127,8 +128,9 @@ fun StatsScreen(healthData: FullHealthData, viewModel: MainViewModel, onNavigate
                         unit = if (healthData.today.hrv > 0) "ms" else "",
                         progress = if (healthData.today.hrv > 0) 0.5f else 0f,
                         badgeText = "Daily Avg",
-                        progressColor = com.example.ui.theme.AccentTeal,
+                        progressColor = AccentTeal,
                         modifier = Modifier.weight(1f),
+                        onQuickAdd = { addDialogMetric = "hrv" },
                         onClick = { onNavigateToDetail("hrv") }
                     )
                 }
@@ -144,6 +146,7 @@ fun StatsScreen(healthData: FullHealthData, viewModel: MainViewModel, onNavigate
                         badgeText = "Daily Avg",
                         progressColor = AccentTeal,
                         modifier = Modifier.weight(1f),
+                        onQuickAdd = { addDialogMetric = "spo2" },
                         onClick = { onNavigateToDetail("spo2") }
                     )
 
@@ -153,12 +156,14 @@ fun StatsScreen(healthData: FullHealthData, viewModel: MainViewModel, onNavigate
                         unit = "",
                         progress = 0f,
                         badgeText = "Status",
+                        progressColor = AccentBlue,
                         modifier = Modifier.weight(1f),
+                        onQuickAdd = { addDialogMetric = "stress" },
                         onClick = { onNavigateToDetail("stress") }
                     )
                 }
 
-                Spacer(modifier = Modifier.height(100.dp))
+                Spacer(modifier = Modifier.height(24.dp))
             }
         }
         

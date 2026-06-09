@@ -44,7 +44,7 @@ fun MetricDetailScreen(metricName: String, healthData: FullHealthData, viewModel
             modifier = Modifier
                 .fillMaxSize()
                 .background(BackgroundPrimary)
-                .padding(top = 40.dp)
+                .statusBarsPadding()
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
@@ -55,7 +55,14 @@ fun MetricDetailScreen(metricName: String, healthData: FullHealthData, viewModel
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(
-                    text = metricName.capitalize(),
+                    text = when (metricName.lowercase()) {
+                        "heart_rate" -> "Heart Rate"
+                        "hrv" -> "HRV"
+                        "spo2" -> "SpO2"
+                        "stress" -> "Stress"
+                        "energy" -> "Calories"
+                        else -> metricName.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+                    },
                     style = MaterialTheme.typography.titleLarge,
                     color = TextPrimary
                 )
@@ -114,46 +121,37 @@ fun MetricDetailScreen(metricName: String, healthData: FullHealthData, viewModel
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp)
+                        .height(240.dp)
                         .clip(RoundedCornerShape(24.dp))
                         .background(BackgroundSecondary)
                         .padding(16.dp),
-                    contentAlignment = Alignment.BottomCenter
+                    contentAlignment = Alignment.Center
                 ) {
-                if (weeklyTrend.value.isEmpty()) {
-                    CircularProgressIndicator(color = AccentTeal, modifier = Modifier.align(Alignment.Center))
-                } else if (weeklyTrend.value.all { it == 0f }) {
-                    Text("No historical data available", color = TextSecondary, modifier = Modifier.align(Alignment.Center))
-                } else {
-                    Row(
-                        modifier = Modifier.fillMaxWidth().fillMaxHeight(),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.Bottom
-                    ) {
-                        val days = listOf("6d", "5d", "4d", "3d", "2d", "1d", "Today")
-                        val maxRaw = weeklyTrend.value.maxOrNull() ?: 0f
-                        val maxVal = if (maxRaw > 0f) maxRaw else 1f
-                        
-                        days.forEachIndexed { idx, d ->
-                            val v = weeklyTrend.value[idx]
-                            val hRatio = (v / maxVal).coerceIn(0f, 1f)
-                            
-                            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Bottom, modifier = Modifier.fillMaxHeight()) {
-                                Box(
-                                    modifier = Modifier
-                                        .width(16.dp)
-                                        .weight(1f, fill=false)
-                                        .fillMaxHeight(hRatio)
-                                        .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
-                                        .background(if (idx == 6) AccentBlue else AccentTeal)
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(d, color = TextSecondary, fontSize = 12.sp)
-                            }
+                    if (weeklyTrend.value.isEmpty()) {
+                        CircularProgressIndicator(color = AccentTeal)
+                    } else if (weeklyTrend.value.all { it == 0f }) {
+                        Text("No historical data available", color = TextSecondary)
+                    } else {
+                        val chartColor = when (metricName.lowercase()) {
+                            "heart_rate" -> Red
+                            "hrv" -> AccentTeal
+                            "spo2" -> AccentTeal
+                            "stress" -> AccentBlue
+                            "energy" -> AccentGreen
+                            "steps" -> AccentTeal
+                            "distance" -> AccentBlue
+                            "hydration" -> AccentBlue
+                            else -> AccentTeal
                         }
+                        com.example.ui.components.VitalLineAreaChart(
+                            yValues = weeklyTrend.value,
+                            metricName = metricName,
+                            lineColor = chartColor,
+                            areaColor = chartColor,
+                            modifier = Modifier.fillMaxSize()
+                        )
                     }
                 }
-            }
         }
     }
 
@@ -163,7 +161,17 @@ fun MetricDetailScreen(metricName: String, healthData: FullHealthData, viewModel
             containerColor = BackgroundSecondary,
             titleContentColor = TextPrimary,
             textContentColor = TextSecondary,
-            title = { Text("Update ${metricName.capitalize()} Goal") },
+            title = {
+                val displayName = when (metricName.lowercase()) {
+                    "heart_rate" -> "Heart Rate"
+                    "hrv" -> "HRV"
+                    "spo2" -> "SpO2"
+                    "stress" -> "Stress"
+                    "energy" -> "Calories"
+                    else -> metricName.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+                }
+                Text("Update $displayName Goal")
+            },
             text = {
                 OutlinedTextField(
                     value = goalInputValue,

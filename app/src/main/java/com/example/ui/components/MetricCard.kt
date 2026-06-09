@@ -42,11 +42,11 @@ fun MetricCard(
 ) {
     Box(
         modifier = modifier
+            .aspectRatio(0.85f)
             .clip(RoundedCornerShape(16.dp))
             .background(BackgroundSecondary)
             .clickable { onClick() }
             .padding(16.dp)
-            .aspectRatio(0.85f)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             Row(

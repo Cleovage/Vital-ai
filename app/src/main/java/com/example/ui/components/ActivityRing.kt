@@ -40,9 +40,11 @@ fun ActivityRing(
 
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
         Canvas(modifier = Modifier.fillMaxSize().padding(strokeWidth / 2)) {
-            val width = size.width
-            val height = size.height
-            val radius = width.coerceAtMost(height) / 2f
+            val diameter = size.minDimension - strokeWidth.toPx()
+            val left = (size.width - diameter) / 2f
+            val top = (size.height - diameter) / 2f
+            val arcSize = androidx.compose.ui.geometry.Size(diameter, diameter)
+            val topLeft = androidx.compose.ui.geometry.Offset(left, top)
 
             // Background track
             drawArc(
@@ -50,6 +52,8 @@ fun ActivityRing(
                 startAngle = 0f,
                 sweepAngle = 360f,
                 useCenter = false,
+                topLeft = topLeft,
+                size = arcSize,
                 style = Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Round)
             )
 
@@ -59,6 +63,8 @@ fun ActivityRing(
                 startAngle = -90f,
                 sweepAngle = (animatedProgress.value * 360f).coerceIn(0f, 360f),
                 useCenter = false,
+                topLeft = topLeft,
+                size = arcSize,
                 style = Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Round)
             )
         }
